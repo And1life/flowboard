@@ -1,14 +1,6 @@
-enum TaskStatus {
-  todo,
-  inProgress,
-  done,
-}
+enum TaskStatus { todo, inProgress, done }
 
-enum TaskPriority {
-  low,
-  medium,
-  high,
-}
+enum TaskPriority { low, medium, high }
 
 class Task {
   final int id;

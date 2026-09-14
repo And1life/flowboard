@@ -24,7 +24,7 @@ class TaskRepository implements Repository<Task> {
   List<Task> findAll() {
     return _tasks;
   }
-  
+
   @override
   void delete(int id) {
     _tasks.removeWhere((item) => item.id == id);
