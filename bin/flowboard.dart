@@ -1,5 +1,6 @@
 import 'package:flowboard/application/services/task_service.dart';
 import 'package:flowboard/domain/entities/task.dart';
+import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
 import 'package:flowboard/infrastructure/repositories/task_repository.dart';
 
 void main() {
@@ -19,8 +20,21 @@ void main() {
     priority: TaskPriority.high,
   );
 
+  final invalidTask = Task(
+    id: 3,
+    title: '',
+    description: 'Invalid task',
+  );
+
   service.createTask(task1);
   service.createTask(task2);
+
+  try {
+    service.createTask(invalidTask);
+  } on FlowboardException catch (e) {
+    print('Error: $e');
+  }
+  
 
   print('All tasks:');
   for (final task in service.getTasks()) {
