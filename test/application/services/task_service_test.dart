@@ -112,5 +112,24 @@ void main() {
         throwsA(isA<FlowboardException>()),
       );
     });
+
+    test('does not expose internal task list', () {
+      final repository = TaskRepository();
+      final service = TaskService(repository);
+
+      final task = Task(
+        id: 7,
+        title: 'Test task',
+        description: 'Test description',
+      );
+
+      service.createTask(task);
+
+      final tasks = service.getTasks();
+
+      tasks.clear();
+
+      expect(service.getTask(7), equals(task));
+    });
   });
 }

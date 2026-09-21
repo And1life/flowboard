@@ -22,7 +22,7 @@ class TaskRepository implements Repository<Task> {
 
   @override
   List<Task> findAll() {
-    return _tasks;
+    return _tasks.toList();
   }
 
   @override
