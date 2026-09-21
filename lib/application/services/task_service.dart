@@ -1,9 +1,9 @@
 import 'package:flowboard/domain/entities/task.dart';
 import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
-import 'package:flowboard/infrastructure/repositories/task_repository.dart';
+import 'package:flowboard/infrastructure/repositories/repository.dart';
 
 class TaskService {
-  final TaskRepository _repository;
+  final Repository<Task> _repository;
 
   TaskService(this._repository);
 

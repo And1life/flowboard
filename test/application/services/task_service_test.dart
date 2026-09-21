@@ -1,8 +1,41 @@
+import 'dart:math';
+
 import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
+import 'package:flowboard/infrastructure/repositories/repository.dart';
 import 'package:test/test.dart';
 import 'package:flowboard/application/services/task_service.dart';
 import 'package:flowboard/domain/entities/task.dart';
 import 'package:flowboard/infrastructure/repositories/task_repository.dart';
+
+class FakeTaskRepository implements Repository<Task> {
+  final List<Task> tasks = [];
+
+  @override
+  void create(Task item) {
+    tasks.add(item);
+  }
+
+  @override
+  Task? findById(int id) {
+    for(final task in tasks) {
+      if (task.id == id) {
+        return task;
+      }
+    }
+
+    return null;
+  }
+
+  @override
+  List<Task> findAll() {
+    return tasks.toList();
+  }
+
+  @override
+  void delete(int id) {
+    tasks.removeWhere((task) => task.id == id);
+  }
+}
 
 void main() {
   group('TaskService', () {
@@ -130,6 +163,21 @@ void main() {
       tasks.clear();
 
       expect(service.getTask(7), equals(task));
+    });
+
+    test('works with repository abstraction', () {
+      final repository = FakeTaskRepository();
+      final service = TaskService(repository);
+
+      final task = Task(
+        id: 8,
+        title: 'Test abstraction',
+        description: 'Test description',
+      );
+
+      service.createTask(task);
+
+      expect(service.getTask(8), equals(task));
     });
   });
 }
