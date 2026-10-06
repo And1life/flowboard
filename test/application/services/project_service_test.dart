@@ -1,7 +1,9 @@
 import 'package:flowboard/application/services/project_service.dart';
 import 'package:flowboard/domain/entities/project.dart';
+import 'package:flowboard/domain/entities/task.dart';
 import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
 import 'package:flowboard/infrastructure/repositories/project_repository.dart';
+import 'package:flowboard/infrastructure/repositories/repository.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -36,6 +38,52 @@ void main() {
       expect(
         () => service.createProject(project),
         throwsA(isA<FlowboardException>()),
+      );
+    });
+
+    test('adds task to project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      final task = Task(
+        id: 1,
+        title: 'Add project service',
+        description: 'Implement business logic',
+      );
+
+      service.createProject(project);
+
+      service.addTaskToProject(1, task);
+
+      final result = service.getProject(1);
+
+      expect(result, isNotNull);
+      expect(result!.tasks, contains(task));
+    });
+
+    test('rejects adding task to non-existing project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final task = Task(
+        id: 1,
+        title: 'Test task',
+        description: 'Test description',
+      );
+
+      expect(
+        () => service.addTaskToProject(999, task),
+        throwsA(isA<FlowboardException>().having(
+          (e) => e.message,
+          'message',
+          'Project not found',
+        )),
       );
     });
   });

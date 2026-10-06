@@ -1,4 +1,5 @@
 import 'package:flowboard/domain/entities/project.dart';
+import 'package:flowboard/domain/entities/task.dart';
 import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
 import 'package:flowboard/infrastructure/repositories/repository.dart';
 
@@ -25,5 +26,15 @@ class ProjectService {
 
   void deleteProject(int id) {
     _repository.delete(id);
+  }
+
+  void addTaskToProject(int projectId, Task task) {
+    final project = _repository.findById(projectId);
+
+    if (project == null) {
+      throw FlowboardException('Project not found');
+    }
+
+    project.addTask(task);
   }
 }
