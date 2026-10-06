@@ -3,7 +3,6 @@ import 'package:flowboard/domain/entities/project.dart';
 import 'package:flowboard/domain/entities/task.dart';
 import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
 import 'package:flowboard/infrastructure/repositories/project_repository.dart';
-import 'package:flowboard/infrastructure/repositories/repository.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -84,6 +83,60 @@ void main() {
           'message',
           'Project not found',
         )),
+      );
+    });
+
+    test('removes task from project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart description',
+      );
+
+      final task = Task(
+        id: 1,
+        title: 'Test task',
+        description: 'Test description',
+      );
+
+      service.createProject(project);
+      service.addTaskToProject(1, task);
+
+      expect(project.tasks, contains(task));
+
+      service.removeTaskFromProject(1, 1);
+
+      expect(project.tasks, isEmpty);
+    });
+
+    test('rejects removing task from non-existing project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      expect(
+        () => service.removeTaskFromProject(999, 1),
+        throwsA(isA<FlowboardException>()),
+      );
+    });
+
+    test('rejects removing non-existing task from project', () {
+      final repository = ProjectRepository();
+      final  service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      service.createProject(project);
+
+      expect(
+        () => service.removeTaskFromProject(1, 999),
+        throwsA(isA<FlowboardException>()),
       );
     });
   });

@@ -37,4 +37,20 @@ class ProjectService {
 
     project.addTask(task);
   }
+
+  void removeTaskFromProject(int projectId, int taskId) {
+    final project = _repository.findById(projectId);
+
+    if (project == null) {
+      throw FlowboardException('Project not found');
+    }
+
+    final taskExists = project.tasks.any((task) => task.id == taskId);
+
+    if (!taskExists) {
+      throw FlowboardException('Task not found in project');
+    }
+
+    project.removeTask(taskId);
+  }
 }
