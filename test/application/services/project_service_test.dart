@@ -139,5 +139,59 @@ void main() {
         throwsA(isA<FlowboardException>()),
       );
     });
+
+    test('starts a task in a project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      final task = Task(
+        id: 1,
+        title: 'Implement start task',
+        description: 'Add startTask method',
+      );
+
+      service.createProject(project);
+      service.addTaskToProject(1, task);
+
+      expect(task.status, TaskStatus.todo);
+
+      service.startTask(1, 1);
+
+      expect(task.status, TaskStatus.inProgress);
+    });
+
+    test('rejects starting task in non-existing project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      expect(
+        () => service.startTask(999, 1),
+        throwsA(isA<FlowboardException>()),
+      );
+    });
+
+    test('rejects starting non-existing task', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      service.createProject(project);
+
+      expect(
+        () => service.startTask(1, 999),
+        throwsA(isA<FlowboardException>()),
+      );
+    });
   });
 }
