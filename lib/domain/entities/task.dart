@@ -1,3 +1,5 @@
+import 'package:flowboard/domain/exceptions/flowboard_exception.dart';
+
 enum TaskStatus { todo, inProgress, done }
 
 enum TaskPriority { low, medium, high }
@@ -6,7 +8,7 @@ class Task {
   final int id;
   final String title;
   final String description;
-  TaskStatus status;
+  TaskStatus _status;
   final TaskPriority priority;
   final DateTime createdAt;
 
@@ -14,21 +16,31 @@ class Task {
     required this.id,
     required this.title,
     required this.description,
-    this.status = TaskStatus.todo,
+    TaskStatus status = TaskStatus.todo,
     this.priority = TaskPriority.medium,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : _status = status,
+       createdAt = createdAt ?? DateTime.now();
+
+  TaskStatus get status => _status;
 
   void complete() {
-    status = TaskStatus.done;
+    if (_status != TaskStatus.inProgress) {
+      throw FlowboardException('Only in-progress tasks can be completed');
+    }
+
+    _status = TaskStatus.done;
   }
 
   void start() {
-    status = TaskStatus.inProgress;
+    if (_status != TaskStatus.todo) {
+      throw FlowboardException('Only todo tasks can be started');
+    }
+    _status = TaskStatus.inProgress;
   }
 
   @override
   String toString() {
-    return "#$id $title [$status] $priority";
+    return "#$id $title [$_status] $priority";
   }
 }

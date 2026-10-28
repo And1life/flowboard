@@ -193,5 +193,85 @@ void main() {
         throwsA(isA<FlowboardException>()),
       );
     });
+
+    test('completes an in-progress task', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      final task = Task(
+        id: 1,
+        title: 'Implement complete task',
+        description: 'Add completeTask method',
+      );
+
+      service.createProject(project);
+      service.addTaskToProject(1, task);
+
+      service.startTask(1, 1);
+      service.completeTask(1, 1);
+
+      expect(task.status, TaskStatus.done);
+    });
+
+    test('rejects completing a todo task', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      final task = Task(
+        id: 1,
+        title: 'Test task',
+        description: 'Test description',
+      );
+
+      service.createProject(project);
+      service.addTaskToProject(1, task);
+
+      expect(
+        () => service.completeTask(1, 1),
+        throwsA(isA<FlowboardException>()),
+      );
+
+      expect(task.status, TaskStatus.todo);
+    });
+
+    test('rejects completing task in non-existing project', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      expect(
+        () => service.completeTask(999, 1),
+        throwsA(isA<FlowboardException>()),
+      );
+    });
+
+    test('rejects completing non-existing tast', () {
+      final repository = ProjectRepository();
+      final service = ProjectService(repository);
+
+      final project = Project(
+        id: 1,
+        name: 'Flowboard',
+        description: 'Dart project manager',
+      );
+
+      service.createProject(project);
+
+      expect(
+        () => service.completeTask(1, 999),
+        throwsA(isA<FlowboardException>()),
+      );
+    });
   });
 }

@@ -70,4 +70,21 @@ class ProjectService {
 
     throw FlowboardException('Task not found in project');
   }
+
+  void completeTask(int projectId, int taskId) {
+    final project = _repository.findById(projectId);
+
+    if (project == null) {
+      throw FlowboardException('Project not found');
+    }
+
+    for (final task in project.tasks) {
+      if (task.id == taskId) {
+        task.complete();
+        return;
+      }
+    }
+
+    throw FlowboardException('Task not found in project');
+  }
 }
